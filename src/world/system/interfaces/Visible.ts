@@ -1,5 +1,5 @@
-import { Group, Mesh } from "three";
+import { Group, Object3D } from "three";
 
 export default interface Visible {
-    getMesh() : Mesh | Group
+    getObject() : Promise<Object3D | Group>
 }

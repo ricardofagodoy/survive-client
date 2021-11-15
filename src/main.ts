@@ -7,7 +7,7 @@ const aspect = window.innerWidth / window.innerHeight
 
 // create a new world
 const world = new World(container, aspect, {
-    DEBUG: true
+    DEBUG: false
 })
 
 // start the animation loop

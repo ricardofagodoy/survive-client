@@ -4,11 +4,11 @@ function createRenderer(container : HTMLCanvasElement) : WebGLRenderer {
 
     const renderer = new WebGLRenderer({
         canvas: container,
+        powerPreference: "high-performance",
         antialias: true
       })
 
-    //renderer.shadowMap.enabled = true
-    //renderer.shadowMap.type = PCFSoftShadowMap
+    renderer.shadowMap.enabled = true
     renderer.physicallyCorrectLights = true
 
     renderer.setPixelRatio(window.devicePixelRatio)
