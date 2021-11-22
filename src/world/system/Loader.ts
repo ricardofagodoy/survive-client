@@ -1,7 +1,7 @@
-import { Texture, TextureLoader } from "three"
+import { Texture, TextureLoader, Cache } from "three"
 import {GLTFLoader, GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
 
-//THREE.Cache.enabled = true
+Cache.enabled = true
 
 class Loader {
 
@@ -41,7 +41,3 @@ class Loader {
 }
 
 export default new Loader()
-
-function reject(error: ErrorEvent, reject: any): void {
-    throw new Error("Function not implemented.")
-}

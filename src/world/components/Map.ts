@@ -44,6 +44,8 @@ export default class Map implements Visible {
             })
         )
 
+        wall.receiveShadow = true
+
         // Top
         const wallTop = wall.clone()
         wallTop.position.set(0, 0, -this.SIZE/2)

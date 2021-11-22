@@ -1,4 +1,4 @@
-import { WebGLRenderer } from "three";
+import { sRGBEncoding, WebGLRenderer } from "three";
 
 function createRenderer(container : HTMLCanvasElement) : WebGLRenderer {
 
@@ -7,6 +7,8 @@ function createRenderer(container : HTMLCanvasElement) : WebGLRenderer {
         powerPreference: "high-performance",
         antialias: true
       })
+
+    renderer.outputEncoding = sRGBEncoding;
 
     renderer.shadowMap.enabled = true
     renderer.physicallyCorrectLights = true

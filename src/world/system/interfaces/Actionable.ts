@@ -1,5 +1,5 @@
-import { Action } from "./Enumerations";
+import { InputAction } from "../enums/Enumerations";
 
 export default interface Actionable {
-    onEvent(action : Action) : any
+    onEvent(action : InputAction) : any
 }

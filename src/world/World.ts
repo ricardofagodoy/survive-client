@@ -3,7 +3,6 @@ import { Clock, Light, Scene, WebGLRenderer, Object3D } from "three";
 import CustomCamera from "./components/Camera";
 import { createLights } from "./components/Light";
 import { createRenderer } from "./system/Renderer";
-import { createControls } from "./system/OrbitControls";
 import { Resizer } from "./system/Resizer";
 import Updatable from "./system/interfaces/Updatable";
 import GameScene from "./scenes/GameScene";
@@ -42,12 +41,6 @@ class World {
       this.controlHandler = new ControlHandler(this.actionables)
       this.controlHandler.setUpListeners()
 
-      // For debug porpose only
-      if (options?.DEBUG) {
-        const controls = createControls(this.camera, this.renderer.domElement);
-        this.add(controls)
-      }
-          
       // Add light and camera to world
       this.add(...this.lights, this.camera)
           
@@ -59,13 +52,17 @@ class World {
 
       // Add Map
       const map = new Map()
-      this.add(map)
+      await this.add(map)
 
       // Add player
       const player = new Player()
-      this.add(player)
+      await this.add(player)
 
-      // Events
+      // Player input events
+      player.addEventListener('move', event => {
+        console.log('Player move ' + event.message)
+      })
+
       player.addEventListener('shoot', event => {
         console.log('Player shoot ' + event.message)
       })
@@ -95,15 +92,15 @@ class World {
       }
     }
   
-    start() {
+    async start() {
 
         // Construct world
-        this.setUpWorld()
+        await this.setUpWorld()
 
         // Starts updating it periodically
         this.renderer.setAnimationLoop(() => {
-            this.tick()
-            this.renderer.render(this.scene, this.camera)
+          this.tick()
+          this.renderer.render(this.scene, this.camera)
         })
     }
   

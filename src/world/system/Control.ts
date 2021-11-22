@@ -1,30 +1,30 @@
 import Actionable from "./interfaces/Actionable";
-import { Action } from "./interfaces/Enumerations";
+import { InputAction } from "./enums/Enumerations";
 
 export default class ControlHandler {
 
-    private readonly KEYDOWN_MAPPINGS : {[key:string]: Action} = {
-        'ArrowDown': Action.DOWN_PRESSED,
-        'ArrowUp': Action.UP_PRESSED,
-        'ArrowLeft': Action.LEFT_PRESSED,
-        'ArrowRight': Action.RIGHT_PRESSED,
-        'KeyS': Action.DOWN_PRESSED,
-        'KeyW': Action.UP_PRESSED,
-        'KeyA': Action.LEFT_PRESSED,
-        'KeyD': Action.RIGHT_PRESSED,
-        'Enter': Action.ACTION_PRESSED
+    private readonly KEYDOWN_MAPPINGS : {[key:string]: InputAction} = {
+        'ArrowDown': InputAction.DOWN_PRESSED,
+        'ArrowUp': InputAction.UP_PRESSED,
+        'ArrowLeft': InputAction.LEFT_PRESSED,
+        'ArrowRight': InputAction.RIGHT_PRESSED,
+        'KeyS': InputAction.DOWN_PRESSED,
+        'KeyW': InputAction.UP_PRESSED,
+        'KeyA': InputAction.LEFT_PRESSED,
+        'KeyD': InputAction.RIGHT_PRESSED,
+        'Enter': InputAction.ACTION_PRESSED
     }
 
-    private readonly KEYUP_MAPPINGS : {[key:string]: Action} = {
-        'ArrowDown': Action.DOWN_RELEASED,
-        'ArrowUp': Action.UP_RELEASED,
-        'ArrowLeft': Action.LEFT_RELEASED,
-        'ArrowRight': Action.RIGHT_RELEASED,
-        'KeyS': Action.DOWN_RELEASED,
-        'KeyW': Action.UP_RELEASED,
-        'KeyA': Action.LEFT_RELEASED,
-        'KeyD': Action.RIGHT_RELEASED,
-        'Enter': Action.ACTION_RELEASED
+    private readonly KEYUP_MAPPINGS : {[key:string]: InputAction} = {
+        'ArrowDown': InputAction.DOWN_RELEASED,
+        'ArrowUp': InputAction.UP_RELEASED,
+        'ArrowLeft': InputAction.LEFT_RELEASED,
+        'ArrowRight': InputAction.RIGHT_RELEASED,
+        'KeyS': InputAction.DOWN_RELEASED,
+        'KeyW': InputAction.UP_RELEASED,
+        'KeyA': InputAction.LEFT_RELEASED,
+        'KeyD': InputAction.RIGHT_RELEASED,
+        'Enter': InputAction.ACTION_RELEASED
     }
 
     private readonly actionables : Actionable[]
@@ -38,7 +38,7 @@ export default class ControlHandler {
         this.setUpEventListener('keyup', this.KEYUP_MAPPINGS)
     }
 
-    private setUpEventListener(eventName : string, mapping : {[key:string]: Action}) {
+    private setUpEventListener(eventName : string, mapping : {[key:string]: InputAction}) {
         window.addEventListener(eventName, event => {
 
             if (event.defaultPrevented)
@@ -48,7 +48,7 @@ export default class ControlHandler {
         }, true)
     }
 
-    private notify(action? : Action) {
+    private notify(action? : InputAction) {
         if (action != undefined)
             this.actionables.forEach(o => o.onEvent(action))
     }
