@@ -1,4 +1,4 @@
-import * as TWEEN from '@tweenjs/tween.js'
+// import * as TWEEN from '@tweenjs/tween.js'
 import { Clock, Light, Scene, WebGLRenderer, Object3D } from "three";
 import CustomCamera from "./components/Camera";
 import { createLights } from "./components/Light";
@@ -27,7 +27,7 @@ class World {
     private readonly updatables : Updatable[]
     private readonly actionables : Actionable[]
 
-    constructor(container : HTMLCanvasElement, aspect : number, options? : WorldOptions) {
+    constructor(container : HTMLCanvasElement, aspect : number, _options? : WorldOptions) {
 
       this.camera = new CustomCamera(aspect)
       this.renderer = createRenderer(container)
@@ -61,10 +61,6 @@ class World {
       // Player input events
       player.addEventListener('move', event => {
         console.log('Player move ' + event.message)
-      })
-
-      player.addEventListener('shoot', event => {
-        console.log('Player shoot ' + event.message)
       })
 
       // Camera to follow player
@@ -111,7 +107,7 @@ class World {
     tick() {
         const delta = this.clock.getDelta()
 
-        TWEEN.update()
+        // TWEEN.update()
 
         for (const object of this.updatables)
             object.tick(delta)

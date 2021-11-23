@@ -1,4 +1,4 @@
-import * as TWEEN from '@tweenjs/tween.js'
+// import * as TWEEN from '@tweenjs/tween.js'
 import { Mesh, Object3D, Quaternion, Vector3 } from "three";
 import Actionable from "../system/interfaces/Actionable";
 import { InputAction, PlayerStatus } from "../system/enums/Enumerations";
@@ -61,7 +61,7 @@ export default class Player extends GameObject implements Updatable, Visible, Ac
             this.animationHandler = new AnimationHandler(mesh, {
                 [PlayerStatus.IDLE]: clips[15],
                 [PlayerStatus.MOVING]: clips[5],
-            }, 1.5)
+            }, 2)
 
             this.animationHandler.play(PlayerStatus.IDLE)
 
@@ -70,30 +70,24 @@ export default class Player extends GameObject implements Updatable, Visible, Ac
 
         this.direction = new Vector3(0, 0, 0)
         this.rotation = new Quaternion(0, 0, 0)
-        this.speed = 50
+        this.speed = 80
     }
 
     onEvent(action: InputAction) {
         
-        const R = this.rotation.clone()
-        const Q = new Quaternion()
-
         switch(action) {
 
             // Move
             case InputAction.UP_PRESSED:
                 this.direction.z = -1
             break
-            case InputAction.DOWN_PRESSED:
-                this.direction.z = 1
-            break
 
             // Rotate
             case InputAction.LEFT_PRESSED:
-                R.multiply(Q.setFromAxisAngle(new Vector3(0, 1, 0), 4 * Math.PI * 0.01))
+                this.rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), Math.PI/100)
             break
             case InputAction.RIGHT_PRESSED:
-                R.multiply(Q.setFromAxisAngle(new Vector3(0, 1, 0), 4 * -Math.PI * 0.01))
+                this.rotation = new Quaternion().setFromAxisAngle(new Vector3(0, 1, 0), -Math.PI/100)
             break
 
             // Stop moving
@@ -104,28 +98,42 @@ export default class Player extends GameObject implements Updatable, Visible, Ac
                 this.direction.z = 0
             break
             case InputAction.LEFT_RELEASED:
-                this.direction.x = 0
+                this.rotation = new Quaternion()
             break
             case InputAction.RIGHT_RELEASED:
-                this.direction.x = 0
+                this.rotation = new Quaternion()
             break
         }
 
-        this.rotation.copy(R)
-
+        // Player moved?
         if (this.direction.length() > 0)
             this.move()
         else
-            this.animationHandler.play(PlayerStatus.IDLE)
+            this.idle()
     }
 
     move() {
 
         this.animationHandler.play(PlayerStatus.MOVING)
 
+        // Event to server
         this.dispatchEvent({
             type: 'move',
-            message: this.direction
+            message: {
+                'direction': this.direction,
+                'rotation': this.rotation
+            }
+        })
+    }
+
+    idle() {
+
+        this.animationHandler.play(PlayerStatus.IDLE)
+
+        // Event to server
+        this.dispatchEvent({
+            type: 'idle',
+            message: {}
         })
     }
 
@@ -136,14 +144,13 @@ export default class Player extends GameObject implements Updatable, Visible, Ac
     tick(delta : number) {
 
         // Rotate mesh 
-        this.mesh.quaternion.slerp(this.rotation, 1.0 - Math.pow(0.01, delta))
+        this.mesh.quaternion.multiply(this.rotation)
 
         // Move
-        const pos = this.direction.clone().applyQuaternion(this.rotation).multiplyScalar(this.speed * delta).normalize()
+        const pos = this.direction.clone().applyQuaternion(this.mesh.quaternion).multiplyScalar(this.speed * delta)
         
-        if(pos.length() > 0) {
+        if(pos.length() > 0)
             this.mesh.position.add(pos)
-        }
 
         // Update animation
         this.animationHandler.tick(delta)
