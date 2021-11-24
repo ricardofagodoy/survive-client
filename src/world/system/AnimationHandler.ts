@@ -7,34 +7,49 @@ export default class AnimationHandler implements Updatable {
     private readonly animations : {[key: string]: AnimationAction}
     private current : string | undefined
 
-    constructor(object : Object3D, clips : {[key: string]: AnimationClip}, speed = 1) {
+    constructor(object : Object3D, clips : {[key: string]: {clip: AnimationClip, repetitions? : number}}, speed = 1) {
         
         this.mixer = new AnimationMixer(object)
         this.mixer.timeScale = speed
 
         this.animations = {}
 
-        for (let [key, value] of Object.entries(clips))
-            this.animations[key] = this.mixer.clipAction(value)
+        for (let [key, value] of Object.entries(clips)) {
+
+            const action = this.mixer.clipAction(value['clip'])
+
+            if (value['repetitions'])
+                action.repetitions = value['repetitions']
+
+            this.animations[key] = action
+        }
     }
 
-    play(status : string) {
+    get animationMixer() {
+        return this.mixer
+    }
+
+    set timeScale(timeScale : number) {
+        this.mixer.timeScale = timeScale
+    }
+
+    play(status : string) : AnimationAction | undefined {
 
         // It's already running!
         if (status == this.current)
-            return
+            return undefined
 
         const previous = this.current
         this.current = status
 
         // Let's play the new animation
         const action = this.animations[status]
-        action.enabled = true
+        action.reset()
 
         if (previous)
             action.crossFadeFrom(this.animations[previous], 0.3, false)
 
-        action.play()
+        return action.play()
     }
 
     tick(delta: number): void {

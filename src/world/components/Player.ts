@@ -27,14 +27,14 @@ export default class Player extends GameObject implements Updatable, Visible, Ac
         this.promiseMesh = new Promise(async resolve => {
 
             // Sword
-            const sword = (await Loader.loadGLTF('src/assets/models/sword/scene.gltf')).scene
+            const sword = (await Loader.loadGLTF('assets/models/sword/scene.gltf')).scene
             sword.scale.setScalar(0.007)
             sword.translateY(-0.25)
             sword.translateX(-0.4)
             sword.translateZ(-0.03)
 
             // Knight
-            const gltf = await Loader.loadGLTF('src/assets/models/knight/knight.gltf')
+            const gltf = await Loader.loadGLTF('assets/models/knight/knight.gltf')
 
             const mesh = gltf.scene
 
@@ -59,10 +59,12 @@ export default class Player extends GameObject implements Updatable, Visible, Ac
             const clips = gltf.animations
 
             this.animationHandler = new AnimationHandler(mesh, {
-                [PlayerStatus.IDLE]: clips[15],
-                [PlayerStatus.MOVING]: clips[5],
-            }, 2)
+                [PlayerStatus.IDLE]: {clip: clips[15]},
+                [PlayerStatus.MOVING]: {clip: clips[5]},
+                [PlayerStatus.ATTACKING]: {clip: clips[12]}
+            }, 1)
 
+            // Status changes
             this.animationHandler.play(PlayerStatus.IDLE)
 
             resolve(this.mesh)
@@ -70,7 +72,7 @@ export default class Player extends GameObject implements Updatable, Visible, Ac
 
         this.direction = new Vector3(0, 0, 0)
         this.rotation = new Quaternion(0, 0, 0)
-        this.speed = 80
+        this.speed = 50
     }
 
     onEvent(action: InputAction) {
@@ -108,6 +110,8 @@ export default class Player extends GameObject implements Updatable, Visible, Ac
         // Player moved?
         if (this.direction.length() > 0)
             this.move()
+        else if (action == InputAction.ACTION_PRESSED)
+            this.attack()
         else
             this.idle()
     }
@@ -133,6 +137,24 @@ export default class Player extends GameObject implements Updatable, Visible, Ac
         // Event to server
         this.dispatchEvent({
             type: 'idle',
+            message: {}
+        })
+    }
+
+    attack() {
+
+        const action = this.animationHandler.play(PlayerStatus.ATTACKING)
+
+        // Go back to idle
+        if (action) {
+            setTimeout(() => {
+                this.idle()
+            }, action.getClip().duration*1000)
+        }
+
+        // Event to server
+        this.dispatchEvent({
+            type: 'attack',
             message: {}
         })
     }

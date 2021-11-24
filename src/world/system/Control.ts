@@ -24,7 +24,6 @@ export default class ControlHandler {
         'KeyW': InputAction.UP_RELEASED,
         'KeyA': InputAction.LEFT_RELEASED,
         'KeyD': InputAction.RIGHT_RELEASED,
-        'Enter': InputAction.ACTION_RELEASED
     }
 
     private readonly actionables : Actionable[]

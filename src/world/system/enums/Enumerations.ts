@@ -14,7 +14,8 @@ enum InputAction {
 
 enum PlayerStatus {
     IDLE = 'idle',
-    MOVING = 'moving'
+    MOVING = 'moving',
+    ATTACKING = 'attacking'
 }
 
 export { InputAction, PlayerStatus }

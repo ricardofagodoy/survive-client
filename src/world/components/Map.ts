@@ -4,72 +4,79 @@ import Loader from "../system/Loader";
 
 export default class Map implements Visible {
 
-    //private readonly OBJECT_FILE = 'src/world/models/ground.json'
-    //private object: Object3D | undefined
-
     private readonly SIZE = 500
-    private readonly objectGroup : Group
+    private readonly objectGroup : Promise<Group>
 
     constructor() {
 
-        this.objectGroup = new Group()
+        this.objectGroup = new Promise(resolve => {
+            
+            const group = new Group()
 
-        // Ground
-        const groundTexture = Loader.loadTexture('src/assets/textures/grass.jpeg')
+            // Ground
+            const groundTexture = Loader.loadTexture('assets/textures/grass.jpeg')
 
-        groundTexture.wrapS = groundTexture.wrapT = RepeatWrapping
-        groundTexture.repeat.set(this.SIZE/20, this.SIZE/20)
+            groundTexture.wrapS = groundTexture.wrapT = RepeatWrapping
+            groundTexture.repeat.set(this.SIZE/20, this.SIZE/20)
 
-        const ground = new Mesh(
-            new BoxGeometry(this.SIZE, 1, this.SIZE),
-            new MeshStandardMaterial({
-                map: groundTexture
-            })
-        )
+            const ground = new Mesh(
+                new BoxGeometry(this.SIZE, 1, this.SIZE),
+                new MeshStandardMaterial({
+                    map: groundTexture
+                })
+            )
 
-        ground.geometry.rotateX(Math.PI)
-        ground.receiveShadow = true
-        this.objectGroup.add(ground)
+            ground.geometry.rotateX(Math.PI)
+            ground.receiveShadow = true
+            ground.matrixAutoUpdate = false
+            group.add(ground)
 
-        // Walls
-        const wallTexture = Loader.loadTexture('src/assets/textures/wall.jpeg')
+            // Walls
+            const wallTexture = Loader.loadTexture('assets/textures/wall.jpeg')
 
-        wallTexture.wrapS = wallTexture.wrapT = RepeatWrapping
-        wallTexture.repeat.set(12, 2)
+            wallTexture.wrapS = wallTexture.wrapT = RepeatWrapping
+            wallTexture.repeat.set(12, 2)
 
-        const wall = new Mesh(
-            new BoxGeometry(this.SIZE, 40, 10),
-            new MeshStandardMaterial({
-                map: wallTexture
-            })
-        )
+            const wall = new Mesh(
+                new BoxGeometry(this.SIZE, 40, 10),
+                new MeshStandardMaterial({
+                    map: wallTexture
+                })
+            )
 
-        wall.receiveShadow = true
+            wall.receiveShadow = true
+            wall.matrixAutoUpdate = false
 
-        // Top
-        const wallTop = wall.clone()
-        wallTop.position.set(0, 0, -this.SIZE/2)
+            // Top
+            const wallTop = wall.clone()
+            wallTop.position.set(0, 0, -this.SIZE/2)
+            wallTop.updateMatrix()
+            group.add(wallTop)
 
-        // Bottom
-        const wallBottom = wallTop.clone()
-        wallBottom.position.set(0, 0, this.SIZE/2)
+            // Bottom
+            const wallBottom = wallTop.clone()
+            wallBottom.position.set(0, 0, this.SIZE/2)
+            wallBottom.updateMatrix()
+            group.add(wallBottom)
 
-        // Left
-        const wallLeft = wallTop.clone()
-        wallLeft.position.set(-this.SIZE/2, 0, 0)
-        wallLeft.rotateY(Math.PI/2)
+            // Left
+            const wallLeft = wallTop.clone()
+            wallLeft.position.set(-this.SIZE/2, 0, 0)
+            wallLeft.rotateY(Math.PI/2)
+            wallLeft.updateMatrix()
+            group.add(wallLeft)
 
-        // Right
-        const wallRight = wallLeft.clone()
-        wallRight.position.set(this.SIZE/2, 0, 0)
-        
-        this.objectGroup.add(wallTop)
-        this.objectGroup.add(wallBottom)
-        this.objectGroup.add(wallLeft)
-        this.objectGroup.add(wallRight)
+            // Right
+            const wallRight = wallLeft.clone()
+            wallRight.position.set(this.SIZE/2, 0, 0)
+            wallRight.updateMatrix()
+            group.add(wallRight)
+
+            resolve(group)
+        })
     }
 
-    async getObject(): Promise<Object3D | Group> {
+    getObject(): Promise<Object3D | Group> {
         return this.objectGroup  
     }
 }
