@@ -1,3 +1,6 @@
 export default interface WorldOptions {
-    DEBUG : boolean;
+    container : HTMLCanvasElement, 
+    aspect : number
+
+    debug? : boolean;
 }

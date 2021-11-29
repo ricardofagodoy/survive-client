@@ -22,8 +22,8 @@ export default class CustomCamera extends PerspectiveCamera implements Updatable
 
         if (this.target) {
 
-            const goal = new Vector3(0, 30, 100).applyQuaternion(this.target.quaternion).add(this.target.position)
-            const lookAtGoal = new Vector3(0, 10, 0).applyQuaternion(this.target.quaternion).add(this.target.position)
+            const goal = new Vector3(0, 40, 150).applyQuaternion(this.target.quaternion).add(this.target.position)
+            const lookAtGoal = new Vector3(0, 10, -50).applyQuaternion(this.target.quaternion).add(this.target.position)
             
             if (this.position.distanceTo(goal) > 0) {
 

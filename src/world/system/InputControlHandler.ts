@@ -1,7 +1,7 @@
-import Actionable from "./interfaces/Actionable";
 import { InputAction } from "./enums/Enumerations";
+import { Actionable } from "./interfaces/Actionable";
 
-export default class ControlHandler {
+export default class InputControlHandler {
 
     private readonly KEYDOWN_MAPPINGS : {[key:string]: InputAction} = {
         'ArrowDown': InputAction.DOWN_PRESSED,
@@ -33,8 +33,25 @@ export default class ControlHandler {
     }
 
     setUpListeners() {
+
+        // Keyboard
         this.setUpEventListener('keydown', this.KEYDOWN_MAPPINGS)
         this.setUpEventListener('keyup', this.KEYUP_MAPPINGS)
+
+        // Mouse
+        window.addEventListener('mousemove', e => {
+
+            const movement = e.movementX
+
+            if (movement == 0)
+                this.notify(InputAction.MOUSE_STOP)
+            else
+                this.notify((movement < 0 ? InputAction.MOUSE_MOVE_LEFT : InputAction.MOUSE_MOVE_RIGHT), movement)
+        })
+
+        window.addEventListener('click', _ => {
+            this.notify(InputAction.ACTION_PRESSED)
+        })
     }
 
     private setUpEventListener(eventName : string, mapping : {[key:string]: InputAction}) {
@@ -47,8 +64,8 @@ export default class ControlHandler {
         }, true)
     }
 
-    private notify(action? : InputAction) {
-        if (action != undefined)
-            this.actionables.forEach(o => o.onEvent(action))
+    private notify(inputAction? : InputAction, value? : number) {
+        if (inputAction != undefined)
+            this.actionables.forEach(o => o.onEvent({ inputAction, value }))
     }
 }

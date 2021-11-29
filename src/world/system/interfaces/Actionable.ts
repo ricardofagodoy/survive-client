@@ -1,5 +1,12 @@
 import { InputAction } from "../enums/Enumerations";
 
-export default interface Actionable {
-    onEvent(action : InputAction) : any
+type InputActionEvent = {
+    inputAction : InputAction
+    value? : number
 }
+
+interface Actionable {
+    onEvent(inputActionEvent : InputActionEvent) : any
+}
+
+export { InputActionEvent, Actionable }

@@ -4,21 +4,46 @@ canvas {
     left: 0;
 }
 
-#loading {
+.loading {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: #000;
-    text-align: center;
     z-index: 1;
 }
 
-#message {
+.welcome {
     position: relative;
-    top: 40%;
+    top: 30%;
+    font-size: 5rem;
+    color: #f00;
     font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size: 6rem;
+    text-align: center;
+}
+
+.newcomer {
+    margin-top: 5vh;
     color: #fff;
+    font-size: 2rem;
+}
+
+.newcomer input[type="text"] {
+    margin: 3vh 0;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.newcomer button {
+    min-width: 10vw;
+    font-size: 1em;
+    margin: 1vh 0;
+}
+
+.ready {
+    display: none;
+    margin-top: 5vh;
+    color: #fff;
+    font-size: 4rem;
 }

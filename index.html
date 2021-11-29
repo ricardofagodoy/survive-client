@@ -1,18 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Survive - Client</title>
-  </head>
-  <body>
-    <div id="loading">
-      <div id="message">
-        Loading, please wait...
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Survive - Client</title>
+</head>
+
+<body>
+
+  <div class="loading">
+
+    <div class="welcome">
+      Welcome to Survive Arena
+  
+      <div class="newcomer">
+        You're new around here, tell me your name so we can begin:
+        <br/>
+        <input id="name" type="text" placeholder="Quitter" maxlength="12" />
+        <br/>
+        <button id="start" type="button">Start</button> 
+      </div>
+
+      <div class="ready">
       </div>
     </div>
-    <canvas id="bg"></canvas>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+
+  </div>
+
+  <canvas id="bg"></canvas>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
 </html>

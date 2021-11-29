@@ -16,7 +16,11 @@ export default class AnimationHandler implements Updatable {
 
         for (let [key, value] of Object.entries(clips)) {
 
-            const action = this.mixer.clipAction(value['clip'])
+            const clip = value['clip']
+            clip.name = key
+
+            const action = this.mixer.clipAction(clip)
+            action.clampWhenFinished = true
 
             if (value['repetitions'])
                 action.repetitions = value['repetitions']
@@ -33,11 +37,11 @@ export default class AnimationHandler implements Updatable {
         this.mixer.timeScale = timeScale
     }
 
-    play(status : string) : AnimationAction | undefined {
+    play(status : string) {
 
         // It's already running!
         if (status == this.current)
-            return undefined
+            return
 
         const previous = this.current
         this.current = status
@@ -49,7 +53,7 @@ export default class AnimationHandler implements Updatable {
         if (previous)
             action.crossFadeFrom(this.animations[previous], 0.3, false)
 
-        return action.play()
+        action.play()
     }
 
     tick(delta: number): void {

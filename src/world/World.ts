@@ -11,8 +11,10 @@ import Map from "./components/Map";
 import Visible from "./system/interfaces/Visible";
 import Collidable from "./system/interfaces/Collidable";
 import WorldOptions from "./system/interfaces/WorldOptions";
-import Actionable from "./system/interfaces/Actionable";
-import ControlHandler from "./system/Control";
+import InputControlHandler from "./system/InputControlHandler";
+import { Actionable } from "./system/interfaces/Actionable";
+import Connection from "../connection/Connection";
+import Character from "./components/Character";
 
 class World {
 
@@ -21,16 +23,16 @@ class World {
     private readonly scene : Scene
     private readonly lights : Light[]
 
-    private readonly controlHandler : ControlHandler
+    private readonly controlHandler : InputControlHandler
 
     private readonly clock : Clock
     private readonly updatables : Updatable[]
     private readonly actionables : Actionable[]
 
-    constructor(container : HTMLCanvasElement, aspect : number, _options? : WorldOptions) {
+    constructor(options : WorldOptions, connection : Connection) {
 
-      this.camera = new CustomCamera(aspect)
-      this.renderer = createRenderer(container)
+      this.camera = new CustomCamera(options.aspect)
+      this.renderer = createRenderer(options.container)
       this.scene = new GameScene()
       this.lights = createLights()
 
@@ -38,30 +40,33 @@ class World {
       this.updatables = []
       this.actionables = []
 
-      this.controlHandler = new ControlHandler(this.actionables)
+      this.controlHandler = new InputControlHandler(this.actionables)
       this.controlHandler.setUpListeners()
 
       // Add light and camera to world
       this.add(...this.lights, this.camera)
           
       // Listener to adapt to screen resizes
-      new Resizer(container, this.camera, this.renderer)
+      new Resizer(this.camera, this.renderer)
     }
 
-    async setUpWorld() {
+    async setUpWorld(name : string) {
 
       // Add Map
       const map = new Map()
       await this.add(map)
 
       // Add player
-      const player = new Player()
+      const player = new Player(name, 75)
       await this.add(player)
 
       // Player input events
-      player.addEventListener('move', event => {
-        console.log('Player move ' + event.message)
-      })
+      // player.addEventListener('move', event => {
+      //   console.log('Player move ' + event.message)
+      // })
+
+      // Another player
+      this.add(new Character('Bob'))
 
       // Camera to follow player
       player.getObject().then(object => this.camera.setTarget(object))
@@ -88,10 +93,10 @@ class World {
       }
     }
   
-    async start() {
+    async start(name : string) {
 
         // Construct world
-        await this.setUpWorld()
+        await this.setUpWorld(name)
 
         // Starts updating it periodically
         this.renderer.setAnimationLoop(() => {
