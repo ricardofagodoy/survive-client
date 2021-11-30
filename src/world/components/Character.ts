@@ -1,7 +1,6 @@
-// import * as TWEEN from '@tweenjs/tween.js'
 import { Group, Mesh, MeshStandardMaterial, Object3D, Quaternion, Vector3 } from "three";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry.js"
-import { PlayerStatus } from "../system/enums/Enumerations";
+import { CharacterStatus } from "../system/enums/Enumerations";
 import Updatable from "../system/interfaces/Updatable";
 import Visible from "../system/interfaces/Visible";
 import Loader from '../system/Loader';
@@ -23,17 +22,17 @@ export default class Character extends GameObject implements Updatable, Visible 
     protected direction : Vector3
     protected rotation : Quaternion
     private speed : number
+    private status : CharacterStatus
     private canMove : boolean
 
     constructor(name : string, speed? : number, position? : Vector3, rotation? : Quaternion) {
 
         super()
 
-        console.log(name + ' created')
-
         this.speed = speed || 60
         this.rotation = rotation || EMPTY_QUARTENION
         this.direction = new Vector3(0, 0, 0)
+        this.status = CharacterStatus.IDLE
         this.canMove = true
 
         // Load model
@@ -69,12 +68,12 @@ export default class Character extends GameObject implements Updatable, Visible 
             // 8 Walk
 
             this.animationHandler = new AnimationHandler(model, {
-                [PlayerStatus.IDLE]: {clip: clips[5]},
-                [PlayerStatus.MOVING]: {clip: clips[7]},
-                [PlayerStatus.ATTACKING]: {clip: clips[0], repetitions: 1},
-                [PlayerStatus.TAKE_HIT]: {clip: clips[3], repetitions: 1},
-                [PlayerStatus.DIE]: {clip: clips[2], repetitions: 1},
-                [PlayerStatus.ATTACKING_SPECIAL]: {clip: clips[1], repetitions: 1}
+                [CharacterStatus.IDLE]: {clip: clips[5]},
+                [CharacterStatus.MOVING]: {clip: clips[7]},
+                [CharacterStatus.ATTACKING]: {clip: clips[0], repetitions: 1},
+                [CharacterStatus.TAKE_HIT]: {clip: clips[3], repetitions: 1},
+                [CharacterStatus.DIE]: {clip: clips[2], repetitions: 1},
+                [CharacterStatus.ATTACKING_SPECIAL]: {clip: clips[1], repetitions: 1}
             }, this.speed/50)
         
             // Animation status changes - event when single animation finishes
@@ -91,7 +90,7 @@ export default class Character extends GameObject implements Updatable, Visible 
             mesh.add(model)
             this.mesh = mesh
 
-            // Name
+            // Nickname mesh
             const nameMesh = new Mesh(
                 new TextGeometry(name, {
                     font: await Loader.loadFont('assets/fonts/helvetiker_regular.typeface.json'),
@@ -114,51 +113,50 @@ export default class Character extends GameObject implements Updatable, Visible 
         })
     }
 
-    move(delta : number) {
-
-        this.animationHandler.play(PlayerStatus.MOVING)
-
-        const newPosition = this.direction.clone().applyQuaternion(this.mesh.quaternion).multiplyScalar(this.speed * delta)
-        this.mesh.position.add(newPosition)
-
-        // Event to server
-        this.dispatchEvent({
-            type: 'move',
-            message: {
-                'direction': this.direction,
-                'rotation': this.rotation
-            }
-        })
+    setPosition(position: Vector3): void {
+        this.mesh.position.copy(position)
     }
 
-    rotate(delta : number) {
+    getPosition(): Vector3 {
+        return this.mesh.position
+    }
+
+    setRotation(rotation: Quaternion): void {
+        this.mesh.quaternion.copy(rotation)
+    }
+
+    getRotation(): Quaternion {
+        return this.mesh.quaternion
+    }
+
+    move(delta : number) : Vector3 {
+
+        this.status = CharacterStatus.MOVING
+
+        this.mesh.position.add(
+            this.direction.clone()
+                          .applyQuaternion(this.mesh.quaternion)
+                          .multiplyScalar(this.speed * delta)
+        )
+
+        return this.getPosition()
+    }
+
+    rotate(delta : number) : Quaternion {
+
         const newRotation = this.mesh.quaternion.clone().multiply(this.rotation)
         this.mesh.quaternion.slerp(newRotation, 1.0 - Math.pow(0.001, delta))
+
+        return this.getRotation()
     }
 
     idle(_ : number) {
-
-        this.animationHandler.play(PlayerStatus.IDLE)
-
-        // Event to server
-        this.dispatchEvent({
-            type: 'idle',
-            message: {}
-        })
+        this.status = CharacterStatus.IDLE
     }
 
     attack() {
-
-        // Can't move while attacking
         this.canMove = false
-
-        this.animationHandler.play(PlayerStatus.ATTACKING)
-
-        // Event to server
-        this.dispatchEvent({
-            type: 'attack',
-            message: {}
-        })
+        this.status = CharacterStatus.ATTACKING
     }
 
     getObject(): Promise<Object3D> {
@@ -170,7 +168,7 @@ export default class Character extends GameObject implements Updatable, Visible 
         if (this.canMove) {
 
             // Rotate 
-            if (this.rotation !== EMPTY_QUARTENION)
+            if (!this.rotation.equals(EMPTY_QUARTENION))
                 this.rotate(delta)
 
             // Move
@@ -180,7 +178,8 @@ export default class Character extends GameObject implements Updatable, Visible 
                 this.idle(delta)
         }
 
-        // Update animation
+        // Play and update animation
+        this.animationHandler.play(this.status)
         this.animationHandler.tick(delta)
     }
 }

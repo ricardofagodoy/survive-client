@@ -1,5 +1,5 @@
 import { Object3D, Quaternion, Vector3 } from "three";
-import { InputAction } from "../system/enums/Enumerations";
+import { InputAction, PlayerAction } from "../system/enums/Enumerations";
 import { Actionable, InputActionEvent } from "../system/interfaces/Actionable";
 import Character from "./Character";
 
@@ -56,5 +56,36 @@ export default class Player extends Character implements Actionable {
                 this.attack()
             break
         }
+    }
+
+    move(delta : number) {
+        const position = super.move(delta)
+
+        this.dispatchEvent({
+            type: PlayerAction.MOVE,
+            message: { position }
+        })
+
+        return position
+    }
+
+    rotate(delta : number) {
+        const rotation = super.rotate(delta)
+
+        this.dispatchEvent({
+            type: PlayerAction.ROTATE,
+            message: { rotation }
+        })
+
+        return rotation
+    }
+
+    attack() {
+        super.attack()
+
+        this.dispatchEvent({
+            type: PlayerAction.ATTACK,
+            message: {}
+        })
     }
 }

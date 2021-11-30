@@ -1,3 +1,8 @@
+
+@font-face {
+    font-family: 'Special';
+    src: url("assets/fonts/SpecialElite-Regular.ttf");
+}
 canvas {
     position: fixed;
     top: 0;
@@ -10,7 +15,7 @@ canvas {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #000;
+    background: linear-gradient(black, #CD5B3C);
     z-index: 1;
 }
 
@@ -19,7 +24,7 @@ canvas {
     top: 30%;
     font-size: 5rem;
     color: #f00;
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-family: 'Special';
     text-align: center;
 }
 

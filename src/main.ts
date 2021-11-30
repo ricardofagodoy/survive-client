@@ -11,7 +11,9 @@ const start = document.getElementById('start') as HTMLElement
 const nameInput = document.getElementById('name') as any
 
 // Newcomer
-createWorld(nameInput.value || 'Noob')
+start.onclick = () => {
+    createWorld(nameInput.value || 'Noob')
+}
 
 function createWorld(name : string) {
 
@@ -23,22 +25,30 @@ function createWorld(name : string) {
     ready.textContent = 'Connecting to server, please wait...'
 
     const connection = new Connection()
+    connection.connect((success : boolean) => {
 
-    // Bind to HTML element
-    const container = document.querySelector('#bg') as HTMLCanvasElement
-    const aspect = window.innerWidth / window.innerHeight
+        if (!success) {
+            ready.style.color = 'red'
+            ready.textContent = 'Failed to connect to server'
+            return
+        }
 
-    // Build 3D world
-    ready.textContent = 'Loading world, please wait...'
+        // Bind to HTML element
+        const container = document.querySelector('#bg') as HTMLCanvasElement
+        const aspect = window.innerWidth / window.innerHeight
 
-    // create a new world
-    const world = new World({
-        container, 
-        aspect
-    }, connection)
+        // Build 3D world
+        ready.textContent = 'Loading world, please wait...'
 
-    // When world ready - click to start!
-    world.start(name).then(() => {
-        loading.style.display = 'none'
+        // create a new world
+        const world = new World({
+            container, 
+            aspect
+        }, connection)
+
+        // When world ready - click to start!
+        world.start(name).then(() => {
+            loading.style.display = 'none'
+        })
     })
 }

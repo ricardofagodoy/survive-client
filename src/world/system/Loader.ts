@@ -1,26 +1,18 @@
-import { Texture, TextureLoader, Cache, Group, LoadingManager } from "three"
+import { Texture, TextureLoader, Cache } from "three"
 import { Font, FontLoader } from "three/examples/jsm/loaders/FontLoader"
 import {GLTFLoader, GLTF} from 'three/examples/jsm/loaders/GLTFLoader.js'
-import {FBXLoader} from 'three/examples/jsm/loaders/FBXLoader'
-import {TGALoader} from 'three/examples/jsm/loaders/TGALoader'
 
 Cache.enabled = true
 
 class Loader {
 
     private readonly objectLoader : GLTFLoader
-    //private readonly fbxLoader : FBXLoader
     private readonly textureLoader : TextureLoader
     private readonly fontLoader : FontLoader
 
     constructor() {
 
         this.objectLoader = new GLTFLoader()
-
-        //const manager = new LoadingManager();
-        //manager.addHandler( /\.tga$/i, new TGALoader() );
-        //this.fbxLoader = new FBXLoader(manager)
-
         this.textureLoader = new TextureLoader()
         this.fontLoader = new FontLoader()
 

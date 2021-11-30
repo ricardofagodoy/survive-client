@@ -39,16 +39,6 @@ export default class InputControlHandler {
         this.setUpEventListener('keyup', this.KEYUP_MAPPINGS)
 
         // Mouse
-        window.addEventListener('mousemove', e => {
-
-            const movement = e.movementX
-
-            if (movement == 0)
-                this.notify(InputAction.MOUSE_STOP)
-            else
-                this.notify((movement < 0 ? InputAction.MOUSE_MOVE_LEFT : InputAction.MOUSE_MOVE_RIGHT), movement)
-        })
-
         window.addEventListener('click', _ => {
             this.notify(InputAction.ACTION_PRESSED)
         })

@@ -1,4 +1,4 @@
-import { BoxGeometry, Group, Mesh, MeshStandardMaterial, Object3D, RepeatWrapping } from "three";
+import { BoxGeometry, Group, Mesh, MeshStandardMaterial, Object3D, Quaternion, RepeatWrapping, Vector3 } from "three";
 import Visible from "../system/interfaces/Visible";
 import Loader from "../system/Loader";
 
@@ -74,6 +74,19 @@ export default class Map implements Visible {
 
             resolve(group)
         })
+    }
+
+    setPosition(_: Vector3): void {
+        throw new Error("Method not implemented.");
+    }
+    getPosition(): Vector3 {
+        throw new Error("Method not implemented.");
+    }
+    setRotation(_: Quaternion): void {
+        throw new Error("Method not implemented.");
+    }
+    getRotation(): Quaternion {
+        throw new Error("Method not implemented.");
     }
 
     getObject(): Promise<Object3D | Group> {

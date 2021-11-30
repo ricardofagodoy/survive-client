@@ -23,6 +23,7 @@ class World {
     private readonly scene : Scene
     private readonly lights : Light[]
 
+    private readonly connection : Connection
     private readonly controlHandler : InputControlHandler
 
     private readonly clock : Clock
@@ -43,6 +44,8 @@ class World {
       this.controlHandler = new InputControlHandler(this.actionables)
       this.controlHandler.setUpListeners()
 
+      this.connection = connection
+
       // Add light and camera to world
       this.add(...this.lights, this.camera)
           
@@ -60,10 +63,11 @@ class World {
       const player = new Player(name, 75)
       await this.add(player)
 
-      // Player input events
-      // player.addEventListener('move', event => {
-      //   console.log('Player move ' + event.message)
-      // })
+      // Handle player actions and events to server
+      this.connection.handlePlayerActions(player)
+
+      // Take actions on server events
+      // TODO: implement
 
       // Another player
       this.add(new Character('Bob'))

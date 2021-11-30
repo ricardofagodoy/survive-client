@@ -16,7 +16,7 @@ enum InputAction {
     MOUSE_STOP
 }
 
-enum PlayerStatus {
+enum CharacterStatus {
     IDLE = 'idle',
     MOVING = 'moving',
     ATTACKING = 'attacking',
@@ -25,4 +25,10 @@ enum PlayerStatus {
     DIE = 'die'
 }
 
-export { InputAction, PlayerStatus }
+enum PlayerAction {
+    MOVE = 'move',
+    ROTATE = 'rotate',
+    ATTACK = 'attack'
+}
+
+export { InputAction, CharacterStatus, PlayerAction }
